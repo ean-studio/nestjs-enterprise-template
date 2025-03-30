@@ -68,32 +68,31 @@ jobs:
       - name: Get latest version from GitHub Package Registry
         id: get-version
         run: |
-          LATEST_VERSION=$(npm view @ean-studio/backend-template-sdk version 2>/dev/null || echo "0.0.0")
+          LATEST_VERSION=$(npm view @ean-studio/backend-template-sdk version)
           echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
 
       - name: Update SDK version
         run: |
           cd dist/sdk
-          if [ "${{ steps.get-version.outputs.latest_version }}" = "0.0.0" ]; then
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          CURRENT_VERSION=${{ steps.get-version.outputs.latest_version }}
+          npm version $CURRENT_VERSION --no-git-tag-version
+          if [ "$CURRENT_VERSION" = "0.0.0" ]; then
             npm version 1.0.0 --no-git-tag-version
           else
-            BRANCH_NAME=${GITHUB_REF#refs/heads/}
-            CURRENT_VERSION=${{ steps.get-version.outputs.latest_version }}
             case $BRANCH_NAME in
               "main")
-                npm version $CURRENT_VERSION --no-git-tag-version
                 npm version major --no-git-tag-version
                 ;;
               "develop")
-                npm version $CURRENT_VERSION --no-git-tag-version
                 npm version minor --no-git-tag-version
                 ;;
               *)
-                npm version $CURRENT_VERSION --no-git-tag-version
                 npm version patch --no-git-tag-version
                 ;;
             esac
           fi
+
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
