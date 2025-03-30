@@ -62,7 +62,6 @@ jobs:
           npm pkg set repository.url="https://github.com/ean-studio/nestjs-enterprise-template"
           npm pkg set author="Ean Studio"
           npm pkg set license="ISC"
-          npm pkg set private=false
           npm pkg set bugs.url="https://github.com/ean-studio/nestjs-enterprise-template/issues"
           npm pkg set homepage="https://github.com/ean-studio/nestjs-enterprise-template"
 
