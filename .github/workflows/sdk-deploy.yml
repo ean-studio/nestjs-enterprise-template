@@ -1,0 +1,67 @@
+name: Deploy Nestia SDK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - '.github/workflows/sdk-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build SDK
+        run: pnpm build:sdk
+
+      - name: Update SDK package.json
+        run: |
+          cd dist/sdk
+          npm pkg set name="@ean-studio/backend-template-sdk"
+          npm pkg set repository.type="git"
+          npm pkg set repository.url="https://github.com/ean-studio/nestjs-enterprise-template"
+          npm pkg set author="Ean Studio"
+          npm pkg set license="ISC"
+          npm pkg set bugs.url="https://github.com/ean-studio/nestjs-enterprise-template/issues"
+          npm pkg set homepage="https://github.com/ean-studio/nestjs-enterprise-template"
+
+      - name: Get latest version from GitHub Package Registry
+        id: get-version
+        run: |
+          LATEST_VERSION=$(npm view @ean-studio/backend-template-sdk version || echo "0.0.0")
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update SDK version
+        run: |
+          cd dist/sdk
+          npm version patch --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Publish to GitHub Package Registry
+        run: |
+          cd dist/sdk
+          pnpm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
