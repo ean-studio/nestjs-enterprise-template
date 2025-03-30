@@ -1,0 +1,15 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator markdown {
+    provider = "prisma-markdown"
+    title    = "Backend ERD"
+    output   = "../../ERD.md"
+}

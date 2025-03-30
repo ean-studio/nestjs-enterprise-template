@@ -1,8 +1,50 @@
+# 빌드 산출물
 dist/
+build/
+*.tsbuildinfo
+
+# 의존성
 node_modules/
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
+.pnpm-store/
+
+# 환경 설정
+.env
+.env.*
+!.env.example
+
+# IDE 및 편집기
+.idea/
+.vscode/
+*.sublime-*
+.project
+.classpath
+.settings/
+
+# 운영체제
+.DS_Store
+Thumbs.db
+
+# 로그
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 테스트 커버리지
+coverage/
+
+# 임시 파일
+*.tmp
+*.temp
+.cache/
+
+# Prisma
+prisma/*.db
+prisma/migrations/
+
+# 기타
+.vercel
+.netlify
+.next
 

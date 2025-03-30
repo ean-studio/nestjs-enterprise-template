@@ -1,0 +1,43 @@
+model User {
+    id        String   @id @default(uuid())
+    name      String?
+    avatar    String?
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    account        Account?
+    socialAccounts SocialAccount[]
+
+    @@map("users")
+}
+
+model Account {
+    id        String    @id @default(uuid())
+    userId    String    @unique @map("user_id")
+    email     String    @unique
+    password  String
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+    deletedAt DateTime? @map("deleted_at")
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@map("accounts")
+}
+
+model SocialAccount {
+    id         String   @id @default(uuid())
+    userId     String   @map("user_id")
+    provider   String
+    providerId String   @unique @map("provider_id")
+    email      String
+    name       String?
+    avatar     String?
+    metadata   Json?
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@map("social_accounts")
+}

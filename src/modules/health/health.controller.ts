@@ -1,5 +1,5 @@
 import { ApiResponse } from '@common/utils/api-response';
-import { TypedBody, TypedRoute } from '@nestia/core';
+import { TypedRoute } from '@nestia/core';
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -17,10 +17,5 @@ export class HealthController {
   @TypedRoute.Get()
   async check(): Promise<ApiResponse<IHealthResult>> {
     return ApiResponse.success(await this.healthService.check());
-  }
-
-  @TypedRoute.Post()
-  async create(@TypedBody() body: IHealthResult): Promise<ApiResponse<IHealthResult>> {
-    return ApiResponse.success(body);
   }
 }

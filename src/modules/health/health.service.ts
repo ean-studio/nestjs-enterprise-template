@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 
 import { TxPrismaClient } from '../database';
-import { DatabaseStatus } from './constants';
-import { ServerStatus } from './constants';
+import { DatabaseStatus, ServerStatus } from './constants';
 import { IHealthResult } from './interfaces/health.interface';
 
 @Injectable()
 export class HealthService {
-  constructor(private readonly prisma: TxPrismaClient) {}
+  constructor(
+    private readonly prisma: TxPrismaClient,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
+  ) {}
 
   async check(): Promise<IHealthResult> {
     try {
@@ -17,7 +21,10 @@ export class HealthService {
         this.prisma.tx.$primary().$executeRawUnsafe(sql),
         // 읽기 복사본 연결 확인
         this.prisma.tx.$replica().$executeRawUnsafe(sql),
+        // Redis 연결 확인
+        this.cache.del('test'),
       ]);
+
       return {
         status: ServerStatus.OK,
         timestamp: new Date().toISOString(),

@@ -1,7 +1,7 @@
-import { AppModule } from '@app.module';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { EnvironmentService } from '@modules/environment/environment.service';
+import { RootModule } from '@modules/root.module';
 import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -15,7 +15,7 @@ export namespace Application {
    * Bootstrap the application.
    */
   export async function bootstrap() {
-    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({ logger: false }));
+    const app = await NestFactory.create<NestFastifyApplication>(RootModule, new FastifyAdapter({ logger: false }));
 
     const env = app.get(EnvironmentService);
     const port = env.getNumber('PORT');

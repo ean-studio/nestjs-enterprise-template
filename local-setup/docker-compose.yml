@@ -1,0 +1,43 @@
+services:
+  postgresql-main:
+    image: 'bitnami/postgresql:latest'
+    ports:
+      - '15432:5432'
+    restart: always
+    volumes:
+      - postgresql_main_data:/bitnami/postgresql
+      - ./replication-user-grant.sql:/docker-entrypoint-initdb.d/db.sql
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl
+      - POSTGRESQL_REPLICATION_PASSWORD=password
+      - POSTGRESQL_USERNAME=user
+      - POSTGRESQL_PASSWORD=password
+
+  postgesql-standby:
+    image: 'bitnami/postgresql:latest'
+    ports:
+      - '15433:5432'
+    restart: always
+    depends_on:
+      - postgresql-main
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=repl
+      - POSTGRESQL_REPLICATION_PASSWORD=password
+      - POSTGRESQL_MASTER_HOST=postgresql-main
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - POSTGRESQL_USERNAME=user
+      - POSTGRESQL_PASSWORD=password
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '16379:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgresql_main_data:
+    driver: local
+  redis_data:
+    driver: local
