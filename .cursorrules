@@ -1,0 +1,68 @@
+# .cursorrules
+
+## 🧠 프로젝트 개요
+- 이 프로젝트는 **Backend**라는 프로젝트입니다.
+
+## 🛡️ 기술 스탭 (Backend 중심)
+
+### ✅ NestJS + Nestia
+- NestJS 기반의 모노레포 구조입니다.
+- `@nestia/core`를 사용한 타입 안전한 컨트롤러 작성과 OpenAPI 기반 자동 문서화가 설정되어 있습니다.
+- API 요청 타입은 DTO로, Nestia의 `@TypedRoute`, `@TypedBody` 등을 사용합니다.
+
+### ✅ Prisma
+- ORM은 Prisma입니다. DB는 AWS PostgreSQL입니다.
+- 모든 목록은 `id: string` (UUID v7) 기반으로 구성되어 있습니다.
+- Prisma Client를 서비스 레이어에서 직접 사용하며, transaction과 pagination 처리가 많습니다.
+
+### ✅ 프로젝트 구조
+```
+/src
+  
+/prisma              # Prisma 스키마
+```
+
+## 🔐 인증 및 세션
+- 로그인은 JWT 기반입니다.
+- `AccessToken`은 쿠키 또는 헤더로 처리합니다.
+- 행위 RefreshToken + 세션 기반 확장 고려 중입니다.
+
+## 🧪 기호 규칙
+- 타입 안전성을 최우선으로 고려합니다.
+- `uuid`는 모두 `v7`을 사용합니다.
+- API는 RESTful하게 구성되어 있으며 Swagger/Nestia로 자동 문서화됩니다.
+- 에러는 공통 `HttpExceptionFilter`로 핸딩합니다.
+- 서비스 레이어에서 `PrismaClient` 사용하고, controller는 어느한 평가로 유지합니다.
+
+## 💡 Nestia 예시
+```ts
+@TypedRoute.Post()
+async createExpense(@TypedBody() body: CreateExpenseDto) {
+  return this.expenseService.create(body);
+}
+```
+
+## 🚫 피해야 할 것
+- 직접적인 SQL 작성
+- Fat Controller
+- 모노리스트 비슷단 로직
+
+
+## 💅 코드 스타일 및 포맷팅
+
+### Prettier 설정
+- 모든 코드는 Prettier를 통해 일관된 스타일로 포맷팅됩니다.
+- 현재 프로젝트의 Prettier 설정:
+  - 세미콜론 사용 (`semi: true`)
+  - 모든 곳에 후행 쉼표 사용 (`trailingComma: "all"`)
+  - 작은따옴표 사용 (`singleQuote: true`)
+  - 한 줄 최대 길이 120자 (`printWidth: 120`)
+  - 들여쓰기 2칸 사용 (`tabWidth: 2`)
+  - 줄 끝 문자 자동 처리 (`endOfLine: "auto"`)
+
+### 코드 포맷팅 명령어
+- `npm run format` 명령어로 소스 코드와 Prisma 스키마 파일을 자동 포맷팅할 수 있습니다.
+- 커밋 전에 항상 코드 포맷팅을 실행하는 것을 권장합니다.
+
+## 📦 패키지 매니저
+- 이 프로젝트에서는 패키지 매니저로 pnpm을 사용합니다. pnpm은 빠르고 효율적인 패키지 매니저로, Node.js 프로젝트에서 의존성을 관리하는 데 사용됩니다.
