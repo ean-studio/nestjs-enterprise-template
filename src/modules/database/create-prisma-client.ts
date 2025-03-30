@@ -21,7 +21,7 @@ export function createPrismaService() {
     },
     {
       construct: (_, [env]: [EnvironmentService]) => {
-        return createPrismaClient(env.get('DATABASE_URL'), env.get('READ_REPLICA_URL'));
+        return createPrismaClient(env.get('DATABASE_URL') ?? '', env.get('READ_REPLICA_URL') ?? '');
       },
     },
   ) as new (env: EnvironmentService) => ReturnType<typeof createPrismaClient>;
