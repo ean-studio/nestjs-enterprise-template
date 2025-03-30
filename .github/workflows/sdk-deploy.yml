@@ -78,14 +78,18 @@ jobs:
             npm version 1.0.0 --no-git-tag-version
           else
             BRANCH_NAME=${GITHUB_REF#refs/heads/}
+            CURRENT_VERSION=${{ steps.get-version.outputs.latest_version }}
             case $BRANCH_NAME in
               "main")
+                npm version $CURRENT_VERSION --no-git-tag-version
                 npm version major --no-git-tag-version
                 ;;
               "develop")
+                npm version $CURRENT_VERSION --no-git-tag-version
                 npm version minor --no-git-tag-version
                 ;;
               *)
+                npm version $CURRENT_VERSION --no-git-tag-version
                 npm version patch --no-git-tag-version
                 ;;
             esac
