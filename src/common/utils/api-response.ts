@@ -1,3 +1,5 @@
+import { ApiStatusCode } from './api-status-code';
+
 interface PagingResponse<T> {
   items: T;
   meta: {
@@ -28,7 +30,7 @@ export class ApiResponse<T = null> {
    */
   status: number = 1000;
 
-  protected constructor(data: T, message = 'success', status = 1000) {
+  protected constructor(data: T, message = 'success', status = ApiStatusCode.SUCCESS) {
     this.data = data;
     this.message = message;
     this.status = status;
@@ -88,6 +90,6 @@ export class ApiResponse<T = null> {
    * @returns Response 객체
    */
   static error(message: string, status?: number): ApiResponse<unknown> {
-    return new ApiResponse(null, message, status ?? 4000);
+    return new ApiResponse(null, message, status ?? ApiStatusCode.CLIENT_ERROR);
   }
 }

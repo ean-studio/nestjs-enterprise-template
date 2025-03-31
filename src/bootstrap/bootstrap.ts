@@ -1,3 +1,4 @@
+import { HttpExceptionFilter } from '@common/filters/http-exception.filter';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { EnvironmentService } from '@modules/environment/environment.service';
@@ -38,6 +39,8 @@ export namespace Application {
       defaultVersion: '1',
       prefix: 'v',
     });
+
+    app.useGlobalFilters(new HttpExceptionFilter());
 
     await app.register(cors, {
       origin: '*',
