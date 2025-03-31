@@ -90,6 +90,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update SDK version
+        id: update-version
         run: |
           cd dist/sdk
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
@@ -124,7 +125,7 @@ jobs:
       - name: Check if version changed
         id: check-version
         run: |
-          if [ "${{ steps.get-version.outputs.latest_version }}" != "${{ steps.get-version.outputs.new_version }}" ]; then
+          if [ "${{ steps.get-version.outputs.latest_version }}" != "${{ steps.update-version.outputs.new_version }}" ]; then
             echo "should_publish=true" >> $GITHUB_OUTPUT
           else
             echo "should_publish=false" >> $GITHUB_OUTPUT
@@ -143,5 +144,5 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git tag -a "sdk-v${{ steps.get-version.outputs.new_version }}" -m "SDK version ${{ steps.get-version.outputs.new_version }}"
-          git push origin "sdk-v${{ steps.get-version.outputs.new_version }}"
+          git tag -a "sdk-v${{ steps.update-version.outputs.new_version }}" -m "SDK version ${{ steps.update-version.outputs.new_version }}"
+          git push origin "sdk-v${{ steps.update-version.outputs.new_version }}"
