@@ -1,9 +1,12 @@
 name: Deploy Nestia SDK
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
+      - release
       - develop
     paths:
       - 'src/**'
@@ -23,6 +26,7 @@ on:
 
 jobs:
   build-and-publish:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -33,6 +37,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -132,3 +137,11 @@ jobs:
           pnpm run deploy
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push Git tag
+        if: steps.check-version.outputs.should_publish == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git tag -a "sdk-v${{ steps.get-version.outputs.new_version }}" -m "SDK version ${{ steps.get-version.outputs.new_version }}"
+          git push origin "sdk-v${{ steps.get-version.outputs.new_version }}"
