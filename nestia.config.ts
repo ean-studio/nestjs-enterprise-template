@@ -10,7 +10,8 @@ const NESTIA_CONFIG: INestiaConfig = {
     return app;
   },
   clone: true,
-  distribute: 'dist/sdk',
-  output: 'dist/sdk/src',
+  distribute: 'sdk',
+  output: 'sdk/src',
+  e2e: 'test',
 };
 export default NESTIA_CONFIG;

@@ -48,3 +48,5 @@ prisma/migrations/
 .netlify
 .next
 
+# SDK
+sdk/

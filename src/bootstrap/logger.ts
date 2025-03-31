@@ -29,6 +29,7 @@ export namespace ApplicationLogger {
 
         Log.log({
           message: `🚀 [REQUEST] ${request.method} ${request.url}`,
+          headers: request.headers,
           parameters: {
             body: request.body ?? {},
             query: request.query ?? {},

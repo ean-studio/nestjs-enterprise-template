@@ -72,7 +72,7 @@ jobs:
 
       - name: Update SDK package.json
         run: |
-          cd dist/sdk
+          cd sdk
           npm pkg set name="@ean-studio/backend-template-sdk"
           npm pkg set repository.type="git"
           npm pkg set repository.url="https://github.com/ean-studio/nestjs-enterprise-template"
@@ -92,7 +92,7 @@ jobs:
       - name: Update SDK version
         id: update-version
         run: |
-          cd dist/sdk
+          cd sdk
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           CURRENT_VERSION=${{ steps.get-version.outputs.latest_version }}
           npm version $CURRENT_VERSION --no-git-tag-version
@@ -134,7 +134,7 @@ jobs:
       - name: Publish to GitHub Package Registry
         if: steps.check-version.outputs.should_publish == 'true'
         run: |
-          cd dist/sdk
+          cd sdk
           pnpm run deploy
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
