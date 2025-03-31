@@ -4,11 +4,22 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - 'src/**'
       - 'package.json'
       - '.github/workflows/sdk-deploy.yml'
   workflow_dispatch:
+    inputs:
+      version_type:
+        description: '버전 업데이트 타입 (major, minor, patch)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
 
 jobs:
   build-and-publish:
@@ -79,26 +90,43 @@ jobs:
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           CURRENT_VERSION=${{ steps.get-version.outputs.latest_version }}
           npm version $CURRENT_VERSION --no-git-tag-version
+
           if [ "$CURRENT_VERSION" = "0.0.0" ]; then
             npm version 1.0.0 --no-git-tag-version
           else
-            case $BRANCH_NAME in
-              "main")
-                npm version major --no-git-tag-version
-                ;;
-              "develop")
-                npm version minor --no-git-tag-version
-                ;;
-              *)
-                npm version patch --no-git-tag-version
-                ;;
-            esac
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              # 수동 실행시 입력된 버전 타입 사용
+              npm version ${{ inputs.version_type }} --no-git-tag-version
+            else
+              # 자동 실행시 브랜치에 따라 버전 타입 결정
+              case $BRANCH_NAME in
+                "main")
+                  npm version major --no-git-tag-version
+                  ;;
+                "develop")
+                  npm version minor --no-git-tag-version
+                  ;;
+                *)
+                  npm version patch --no-git-tag-version
+                  ;;
+              esac
+            fi
           fi
 
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      - name: Check if version changed
+        id: check-version
+        run: |
+          if [ "${{ steps.get-version.outputs.latest_version }}" != "${{ steps.get-version.outputs.new_version }}" ]; then
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish to GitHub Package Registry
+        if: steps.check-version.outputs.should_publish == 'true'
         run: |
           cd dist/sdk
           pnpm run deploy
