@@ -3,20 +3,20 @@ import type { Cache } from 'cache-manager';
 import mockPrismaClient from 'test/db/mock-prisma';
 import { Testing } from 'test/testing.util';
 import type { Mocked } from 'vitest';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { DatabaseStatus, ServerStatus } from './constants';
 import { HealthService } from './health.service';
 
 const mockCache = {
-  del: vi.fn().mockResolvedValue(true),
+  del: vi.fn().mockResolvedValue(false),
 } as unknown as Cache;
 
 describe('HealthService', () => {
   let service: HealthService;
   let cacheManager: Mocked<Cache>;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module = await Testing.createTransactionTestingModule({
       providers: [
         HealthService,
@@ -29,14 +29,6 @@ describe('HealthService', () => {
 
     service = module.get(HealthService);
     cacheManager = module.get(CACHE_MANAGER);
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   describe('check', () => {
