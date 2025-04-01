@@ -27,7 +27,6 @@ module.exports = [
       'no-var': 'error',
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],
-      'brace-style': ['error', '1tbs'],
       semi: ['error', 'always'],
       quotes: ['error', 'single', { avoidEscape: true }],
       'comma-dangle': ['error', 'always-multiline'],

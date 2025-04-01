@@ -9,7 +9,7 @@ import { IHealthResult } from './interfaces/health.interface';
 @Injectable()
 export class HealthService {
   constructor(
-    private readonly prisma: TxPrismaClient,
+    @Inject(TxPrismaClient) public readonly prisma: TxPrismaClient,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
