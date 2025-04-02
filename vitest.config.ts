@@ -1,3 +1,4 @@
+import UnpluginTypia from '@ryoppippi/unplugin-typia';
 import { resolve } from 'path';
 import swc from 'unplugin-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -15,11 +16,8 @@ export default defineConfig({
       include: ['src/modules/**/*.service.ts'],
       exclude: ['**/*.d.ts', '**/*.spec.ts', '**/*.e2e-spec.ts', 'src/main.ts'],
     },
-    deps: {
-      interopDefault: true,
-      inline: [/@nestjs\/common/, /@nestjs\/core/, /@nestjs\/config/],
-    },
-    setupFiles: ['./test/setup.ts'],
+    deps: { interopDefault: true },
+    setupFiles: ['./src/test/setup.ts'],
     typecheck: {
       enabled: false,
     },
@@ -31,11 +29,13 @@ export default defineConfig({
       // Explicitly set the module type to avoid inheriting this value from a `.swcrc` config file
       module: { type: 'es6' },
     }),
+    UnpluginTypia.vite(),
   ],
   resolve: {
     alias: {
       // Ensure Vitest correctly resolves TypeScript path aliases
       src: resolve(__dirname, './src'),
+      '@test': resolve(__dirname, './src/test'),
     },
   },
 });

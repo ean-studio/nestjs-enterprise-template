@@ -1,12 +1,14 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import mockPrismaClient from '@test/db/mock-prisma';
+import { Testing } from '@test/testing.util';
 import type { Cache } from 'cache-manager';
-import mockPrismaClient from 'test/db/mock-prisma';
-import { Testing } from 'test/testing.util';
+import typia from 'typia';
 import type { Mocked } from 'vitest';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { DatabaseStatus, ServerStatus } from './constants';
 import { HealthService } from './health.service';
+import type { IHealthResult } from './interfaces/health.interface';
 
 const mockCache = {
   del: vi.fn().mockResolvedValue(false),
@@ -36,6 +38,9 @@ describe('HealthService', () => {
       // Given
       const mockDate = new Date('2024-01-01T00:00:00.000Z');
       vi.setSystemTime(mockDate);
+
+      const mockHealthResult = typia.random<IHealthResult>();
+      console.log(mockHealthResult);
 
       // prisma mock
       mockPrismaClient.$executeRawUnsafe.mockResolvedValue(1);
